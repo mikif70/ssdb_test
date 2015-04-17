@@ -33,6 +33,10 @@ func configure() {
 
 	flag.Parse()
 
+	if cfg.cmd != "set" && cfg.cmd != "qpush" {
+		log.Panicln("Cmd err: %+v\n")
+	}
+
 	fmt.Printf("Config: %+v\n", cfg)
 }
 
@@ -66,7 +70,12 @@ func main() {
 	defer conn.Close()
 
 	for i := 0; i < cfg.count; i++ {
-		cmd := fmt.Sprintf("%d\n%s\n%d\n%d\n%d\n%d\n\n", len(cfg.cmd), cfg.cmd, len(strconv.Itoa(i)), i, len(strconv.Itoa(i)), i)
+		var cmd string
+		if cfg.cmd == "qpush" {
+			cmd = fmt.Sprintf("%d\n%s\n%d\n%d\n%d\n%d\n\n", len(cfg.cmd), cfg.cmd, len(strconv.Itoa(0)), 0, len(strconv.Itoa(i)), i)
+		} else {
+			cmd = fmt.Sprintf("%d\n%s\n%d\n%d\n%d\n%d\n\n", len(cfg.cmd), cfg.cmd, len(strconv.Itoa(i)), i, len(strconv.Itoa(i)), i)
+		}
 		fmt.Printf("Sent: %q\n", cmd)
 		go writeCmd(conn, cmd)
 	}
